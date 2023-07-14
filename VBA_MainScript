@@ -1,0 +1,156 @@
+Sub Method1():
+    Dim lastRow As Long
+    Dim resultRow As Integer
+    Dim firstYear As Long
+    'Dim totalStock As Long
+    Dim maxPercent As Double
+    Dim minPercent As Double
+    Dim maxVol As Double
+    'Dim maxRow As Long
+    'Dim minRow As Long
+    'Dim maxVolRow As Long
+    Dim ws As Worksheet
+    
+    For Each ws In Worksheets
+        ws.Activate
+        ' get the number of last row, for running in each sheet
+        lastRow = Cells(Rows.Count, 1).End(xlUp).Row
+        resultRow = 1
+        firstYear = 2
+        totalStock = 0
+    
+        For i = 2 To lastRow
+            totalStock = totalStock + Cells(i, 7).Value
+            
+            If Cells(i + 1, 1).Value <> Cells(i, 1).Value Then
+                'Ticker Symbol
+                resultRow = resultRow + 1
+                Cells(resultRow, 9).Value = Cells(i, 1).Value
+                'Yearly Change
+                Cells(resultRow, 10).Value = Cells(i, 6).Value - Cells(firstYear, 3).Value
+                'Percentage
+                Cells(resultRow, 11).Value = (Cells(i, 6).Value - Cells(firstYear, 3).Value) / Cells(firstYear, 3).Value
+                ws.Cells(resultRow, 11).NumberFormat = "0.00%"
+                firstYear = i + 1
+                'Total Volume
+                Cells(resultRow, 12).Value = totalStock
+                totalStock = 0
+            End If
+            
+            If Cells(i, 10) < 0 Then
+                Cells(i, 10).Interior.ColorIndex = 3
+                Cells(i, 11).Interior.ColorIndex = 3
+            ElseIf Cells(i, 10) > 0 Then
+                Cells(i, 10).Interior.ColorIndex = 4
+                Cells(i, 11).Interior.ColorIndex = 4
+            Else
+                Cells(i, 10).Interior.ColorIndex = 0
+                Cells(i, 11).Interior.ColorIndex = 0
+            End If
+        Next i
+    
+        'Second form for max and min
+        maxPercent = WorksheetFunction.Max(Range("K1:K" & lastRow))
+        maxRow = WorksheetFunction.Match(maxPercent, Range("K1:K" & lastRow), 0)
+        minPercent = WorksheetFunction.Min(Range("K1:K" & lastRow))
+        minRow = WorksheetFunction.Match(minPercent, Range("K1:K" & lastRow), 0)
+        Range("P2") = maxPercent
+        Range("P2").NumberFormat = "0.00%"
+        Range("O2") = Cells(maxRow, 9).Value
+        Range("P3") = minPercent
+        Range("P3").NumberFormat = "0.00%"
+        Range("O3") = Cells(minRow, 9).Value
+        maxVol = WorksheetFunction.Max(Range("L1:L" & lastRow))
+        maxVolRow = WorksheetFunction.Match(maxVol, Range("L1:L" & lastRow), 0)
+        Range("P4") = maxVol
+        Range("O4") = Cells(maxVolRow, 9)
+        
+        'Setting header
+        Range("N2") = "Greatest % Increase"
+        Range("N3") = "Greatest % Decrease"
+        Range("N4") = "Greatest Total Volume"
+        Range("O1, I1") = "Ticker"
+        Range("P1") = "Value"
+        Range("J1") = "Yearly Change"
+        Range("K1") = "Percent Change"
+        Range("L1") = "Total Stock Volume"
+    Next ws
+End Sub
+
+Sub Method2():
+    Dim lastRow As Long
+    Dim resultRow As Integer
+    Dim firstYear As Long
+    'Dim totalStock As Long
+    Dim maxPercent As Double
+    Dim minPercent As Double
+    Dim maxVol As Double
+    'Dim maxRow As Long
+    'Dim minRow As Long
+    'Dim maxVolRow As Long
+    Dim ws As Worksheet
+    
+    For Each ws In Worksheets
+        ' get the number of last row, for running in each sheet
+        lastRow = ws.Cells(ws.Rows.Count, 1).End(xlUp).Row
+        resultRow = 1
+        firstYear = 2
+        totalStock = 0
+    
+        For i = 2 To lastRow
+            totalStock = totalStock + ws.Cells(i, 7).Value
+            
+            If ws.Cells(i + 1, 1).Value <> ws.Cells(i, 1).Value Then
+                'Ticker Symbol
+                resultRow = resultRow + 1
+                ws.Cells(resultRow, 9).Value = ws.Cells(i, 1).Value
+                'Yearly Change
+                ws.Cells(resultRow, 10).Value = ws.Cells(i, 6).Value - ws.Cells(firstYear, 3).Value
+                'Percentage
+                ws.Cells(resultRow, 11).Value = (ws.Cells(i, 6).Value - ws.Cells(firstYear, 3).Value) / ws.Cells(firstYear, 3).Value
+                ws.Cells(resultRow, 11).NumberFormat = "0.00%"
+                firstYear = i + 1
+                'Total Volume
+                ws.Cells(resultRow, 12).Value = totalStock
+                totalStock = 0
+            End If
+            
+            If Cells(i, 10) < 0 Then
+                Cells(i, 10).Interior.ColorIndex = 3
+                Cells(i, 11).Interior.ColorIndex = 3
+            ElseIf Cells(i, 10) > 0 Then
+                Cells(i, 10).Interior.ColorIndex = 4
+                Cells(i, 11).Interior.ColorIndex = 4
+            Else
+                Cells(i, 10).Interior.ColorIndex = 0
+                Cells(i, 11).Interior.ColorIndex = 0
+            End If
+        Next i
+    
+        'Second form for max and min
+        maxPercent = WorksheetFunction.Max(ws.Range("K1:K" & lastRow))
+        maxRow = WorksheetFunction.Match(maxPercent, ws.Range("K1:K" & lastRow), 0)
+        minPercent = WorksheetFunction.Min(ws.Range("K1:K" & lastRow))
+        minRow = WorksheetFunction.Match(minPercent, ws.Range("K1:K" & lastRow), 0)
+        ws.Range("P2") = maxPercent
+        ws.Range("P2").NumberFormat = "0.00%"
+        ws.Range("O2") = ws.Cells(maxRow, 9).Value
+        ws.Range("P3") = minPercent
+        ws.Range("P3").NumberFormat = "0.00%"
+        ws.Range("O3") = ws.Cells(minRow, 9).Value
+        maxVol = WorksheetFunction.Max(ws.Range("L1:L" & lastRow))
+        maxVolRow = WorksheetFunction.Match(maxVol, ws.Range("L1:L" & lastRow), 0)
+        ws.Range("P4") = maxVol
+        ws.Range("O4") = ws.Cells(maxVolRow, 9)
+        
+        'Setting header
+        ws.Range("N2") = "Greatest % Increase"
+        ws.Range("N3") = "Greatest % Decrease"
+        ws.Range("N4") = "Greatest Total Volume"
+        ws.Range("O1, I1") = "Ticker"
+        ws.Range("P1") = "Value"
+        ws.Range("J1") = "Yearly Change"
+        ws.Range("K1") = "Percent Change"
+        ws.Range("L1") = "Total Stock Volume"
+    Next ws
+End Sub
